@@ -11,8 +11,40 @@ using PAC.WebAPI.Filters;
 namespace PAC.WebAPI
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("student")]
     public class StudentController : ControllerBase
     {
+        private IStudentLogic _studentLogic;
+
+        public StudentController(IStudentLogic studentLogic)
+        {
+            this._studentLogic = studentLogic;
+        }
+
+        [AuthorizationFilter]
+        [HttpPost]
+        public IActionResult PostStudent([FromBody] Student student)
+        {
+            if(student.Id == 0)
+            {
+                return BadRequest("Id de estudiante no valida");
+            }
+            _studentLogic.InsertStudents(student);
+            return Ok(student);
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult GetStudentById([FromRoute] int id)
+        {
+            return Ok(_studentLogic.GetStudentById(id));
+        }
+    
+        [HttpGet]
+        public IActionResult GetAllStudents([FromQuery]int age)
+        {
+            return Ok(_studentLogic.GetStudents(age));
+        }
+
+
     }
 }
